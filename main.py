@@ -1,7 +1,7 @@
 import argparse
+from datetime import date, datetime
 
-from common.utils import sort_records, parse_csv_to_dicts
-from collections import Counter
+from common.utils import parse_csv_to_dicts, sort_records
 
 
 def task_1(records):
@@ -26,24 +26,36 @@ def task_2(records):
 
 def task_3(records):
     """Print the count of all masts grouped by tenant"""
-
     mast_counts = dict()
     for record in records:
         tenant = record["Tenant Name"]
         mast_counts[tenant] = mast_counts.get(tenant, 0) + 1
-    
+
     for tenant, no_of_masts in mast_counts.items():
-        print(f"Tenant: {tenant}, Number of masts: {no_of_masts}")
+        print(f"Tenant: {tenant} --- Number of masts: {no_of_masts}")
 
 
-def task_controller(task_id, data):
-    """Runs any of the four tasks"""
-    tasks = {
-        "1": task_1,
-        "2": task_2,
-        "3": task_3,
-    }
-    #  "4": task_4}
+def task_4(records):
+    """Print the data for rentals with “Lease Start Date”
+    between 1st June 1999 and 31st August 2007."""
+    result = []
+    for record in records:
+        if record["Lease Start Date"] < date(day=31, month=8, year=2007) and record[
+            "Lease Start Date"
+        ] > date(day=1, month=6, year=1999):
+
+            # Format all date fields to the requested format (DD/MM/YYYY)
+            for el in record:
+                if isinstance(el, datetime):
+                    record[el] = record[el].strftime("%d/%m/%Y")
+
+            result.append(record)
+    print(result)
+
+
+def task_selector(task_id, data):
+    """Runs any of the four tasks by task_id on the data provided"""
+    tasks = {"1": task_1, "2": task_2, "3": task_3, "4": task_4}
     if task_id not in tasks.keys():
         raise ValueError("Please provide a valid task id")
 
@@ -58,5 +70,4 @@ if __name__ == "__main__":
     ap.add_argument("-t", "--task", required=True, help="Task id")
     ap.description = "Hi! You are required to provide an integer between 1-4 to run any of the four tasks! Thanks! :)"
     args = vars(ap.parse_args())
-
-    task_controller(args["task"], data=DATA)
+    task_selector(args["task"], data=DATA)
