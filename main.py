@@ -53,14 +53,12 @@ def task_4(records):
     print(result)
 
 
-def task_selector(task_id, data):
+def task_selector(task_id):
     """Runs any of the four tasks by task_id on the data provided"""
     tasks = {"1": task_1, "2": task_2, "3": task_3, "4": task_4}
     if task_id not in tasks.keys():
         raise ValueError("Please provide a valid task id")
-
-    records = parse_csv_to_dicts(data)
-    tasks[task_id](records)
+    return tasks[task_id]
 
 
 if __name__ == "__main__":
@@ -68,6 +66,11 @@ if __name__ == "__main__":
 
     ap = argparse.ArgumentParser()
     ap.add_argument("-t", "--task", required=True, help="Task id")
+    ap.add_argument("-d", "--DATA", required=False, help="custom_data_for_tests")
     ap.description = "Hi! You are required to provide an integer between 1-4 to run any of the four tasks! Thanks! :)"
     args = vars(ap.parse_args())
-    task_selector(args["task"], data=DATA)
+    if args["DATA"]:
+        DATA = args["DATA"]
+    task_to_run = task_selector(args["task"])
+    records = parse_csv_to_dicts(DATA)
+    task_to_run(records)

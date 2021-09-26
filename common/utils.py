@@ -24,7 +24,9 @@ def parse_csv_to_dicts(csv_filepath):
             if column == "Lease Years":
                 record_element = int(record_element)
             if "Date" in column:
-                record_element = datetime.datetime.strptime(record_element, "%d %b %Y").date()
+                record_element = datetime.datetime.strptime(
+                    record_element, "%d %b %Y"
+                ).date()
 
             processed_record[column] = record_element
         list_of_dicts.append(processed_record)
